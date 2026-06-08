@@ -36,9 +36,10 @@ pipeline {
         }
 
 
-        stage('Trivy Image Scan') {
+       stage('Trivy Image Scan') {
             steps {
-                sh 'trivy image python-app'
+                sh 'trivy image python-app > trivy-report.txt'
+                archiveArtifacts artifacts: 'trivy-report.txt'
             }
         }
 
