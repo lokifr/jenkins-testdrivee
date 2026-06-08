@@ -2,10 +2,6 @@ pipeline {
 
     agent any
 
-    tools {
-        sonarScanner 'hudson.plugins.sonar.SonarRunnerInstallation'
-    }
-
     stages {
 
         stage('Checkout') {
@@ -17,23 +13,32 @@ pipeline {
 
 
         stage('SonarQube Analysis') {
+
             steps {
-                withSonarQubeEnv('sonarqube') {
-                    sh '''
-                    sonar-scanner \
-                    -Dsonar.projectKey=jenkins-test \
-                    -Dsonar.sources=.
-                    '''
+
+                script {
+
+                    def scannerHome = tool 'sonar-scanner'
+
+                    withSonarQubeEnv('sonarqube') {
+
+                        sh """
+                        ${scannerHome}/bin/sonar-scanner \
+                        -Dsonar.projectKey=jenkins-test \
+                        -Dsonar.sources=.
+                        """
+
+                    }
                 }
             }
         }
 
 
         stage('Build Docker Image') {
+
             steps {
                 sh 'docker build -t python-app .'
             }
         }
-
     }
 }
