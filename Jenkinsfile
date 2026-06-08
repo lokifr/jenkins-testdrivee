@@ -2,6 +2,10 @@ pipeline {
 
     agent any
 
+    tools {
+        sonarScanner 'sonar-scanner'
+    }
+
     stages {
 
         stage('Checkout') {
@@ -12,9 +16,15 @@ pipeline {
         }
 
 
-        stage('Test') {
+        stage('SonarQube Analysis') {
             steps {
-                echo "Testing application"
+                withSonarQubeEnv('sonarqube') {
+                    sh '''
+                    sonar-scanner \
+                    -Dsonar.projectKey=jenkins-test \
+                    -Dsonar.sources=.
+                    '''
+                }
             }
         }
 
