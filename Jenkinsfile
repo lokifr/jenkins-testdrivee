@@ -13,21 +13,16 @@ pipeline {
 
 
         stage('SonarQube Analysis') {
-
             steps {
-
                 script {
-
                     def scannerHome = tool 'sonar-scanner'
 
                     withSonarQubeEnv('sonarqube') {
-
                         sh """
                         ${scannerHome}/bin/sonar-scanner \
                         -Dsonar.projectKey=jenkins-test \
                         -Dsonar.sources=.
                         """
-
                     }
                 }
             }
@@ -35,10 +30,17 @@ pipeline {
 
 
         stage('Build Docker Image') {
-
             steps {
                 sh 'docker build -t python-app .'
             }
         }
+
+
+        stage('Trivy Image Scan') {
+            steps {
+                sh 'trivy image python-app'
+            }
+        }
+
     }
 }
